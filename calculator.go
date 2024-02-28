@@ -53,7 +53,21 @@ func main() {
 				fmt.Println("Результат:", resultRoman)
 			}
 		} else {
-			fmt.Println("Введенное выражение не соответсвует установленным требованиям")
+			if (strings.ContainsAny(input, "IVX") && strings.ContainsAny(input, "123456789")) ||
+				(strings.ContainsAny(input, "123456789") && strings.ContainsAny(input, "IVX")) {
+				panic("Ошибка: Используются одновременно разные системы счисления")
+			}
+
+			if strings.ContainsAny(input, "'1', '2', '3', '4', '5', '6', '7', '8', '9', '10'") && !strings.ContainsAny(input, "+-*/") ||
+				strings.ContainsAny(input, "'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'") && !strings.ContainsAny(input, "+-*/") {
+				panic("Ошибка: Строка не является математической операцией")
+			}
+
+			if countOperator(input) > 1 {
+				panic("Ошибка: Формат математической операции не удовлетворяет заданию — два операнда и один оператор (+, -, /, *).")
+			} else {
+				panic("Ошибка: Введенное выражение не соответсвует установленным требованиям")
+			}
 		}
 	}
 }
@@ -89,11 +103,11 @@ func countInRoman(num1, num2, operator string) string {
 		result = value1 / value2
 	}
 
-	if result >= 1 {
+	if result >= 1 { // Проверка на отрицательный результат для римских чисел
 		finalResult := convertToRoman(result)
 		return finalResult
 	} else {
-		panic("В римской системе нет отрицательных чисел")
+		panic("Ошибка: В римской системе нет отрицательных чисел")
 	}
 }
 
@@ -214,4 +228,13 @@ func getOperator(expression string) string {
 	}
 
 	return "" // если оператор не найден
+}
+
+func countOperator(input string) int {
+	operators := []string{"+", "-", "*", "/"}
+	count := 0
+	for _, operator := range operators {
+		count += strings.Count(input, operator)
+	}
+	return count
 }
